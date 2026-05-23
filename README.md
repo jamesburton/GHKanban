@@ -39,6 +39,8 @@ Tools were verified by fetching each tool's official homepage and features/docs 
 |------|---------|---------|-----------------|------------|-------------|-----------|----------|--------|-------|---------------|-----------|------|---------------|---------------|
 | [GitHub Projects v2](https://github.com/features/issues) | Commercial[^ref-gh-projects-docs] | SaaS (GHES self-host)[^ref-ghes] | Native GH board | ✅ | ✅ | 🟡 (GHES only) | ✅ | ❌ | ❌ | ✅[^ref-copilot-coding-agent] | ✅[^ref-copilot-code-review] | ✅ | ✅ | 2026-05-23 |
 | [GitHub Issues](https://docs.github.com/en/issues) | Commercial[^ref-gh-issues-docs] | SaaS (GHES self-host)[^ref-ghes] | Issues list (no board) | 🟡 (search/API cross-repo; no board) | ✅ | 🟡 (GHES only) | 🟡 (keyword linking; no board state sync) | ❌ | ❌ | ✅[^ref-copilot-coding-agent] | ✅[^ref-copilot-code-review] | 🟡 (repo-level only) | ✅ | 2026-05-23 |
+| [ZenHub](https://www.zenhub.com/) | Commercial (Freemium)[^ref-zenhub-pricing] | SaaS + Self-host (Enterprise on-prem)[^ref-zenhub-enterprise] | GitHub-overlay board (browser ext / GitHub App) | 🟡 (within workspace; Enterprise up to 10 GH orgs)[^ref-zenhub-workspaces] | 🟡 (GH issues canonical; sprints, epics, estimates in ZenHub DB)[^ref-zenhub-api] | ✅[^ref-zenhub-enterprise] | ✅ | ✅[^ref-zenhub-ai] | ❌ | ❌ | ❌ | ✅[^ref-zenhub-enterprise] | ✅[^ref-zenhub-api] | 2026-05-23 |
+| [Waffle.io](https://waffle.io/) (defunct) | Commercial (defunct)[^ref-waffle-shutdown] | SaaS (defunct) | GitHub-overlay board (defunct) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 2026-05-23 |
 
 ## 4. Tier-fit matrix (Table 2)
 
@@ -59,6 +61,8 @@ Tools were verified by fetching each tool's official homepage and features/docs 
 |------|------------------|---------------------|-----------------|---------------------------|
 | GitHub Projects v2 | ✅ Free tier; cross-repo board; Copilot AI available | ✅ Org projects; native AI review; reasonable seat pricing | 🟡 No auto-triage; high-volume labelling remains manual | 🟡 GHE plan needed for SSO/SAML; Projects feature itself lacks enterprise auth |
 | GitHub Issues | 🟡 Simple and free; no board or cross-repo aggregation | 🟡 Adequate for basics; no shared board view | ❌ No cross-repo board; high-volume manual triage does not scale | ❌ No project-level RBAC, audit logs, or board |
+| ZenHub | 🟡 Free tier capped at 2 repos; paid plan needed for real use | ✅ Teams plan; cross-repo board; AI labels native | 🟡 Cross-repo board within workspace; no auto-routing triage | ✅ Enterprise on-prem; SSO/SAML; RBAC; audit logs |
+| Waffle.io | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked |
 
 ## 5. Tool deep dives
 
@@ -103,3 +107,9 @@ Applies only if the recommendation rubric concludes that building is justified.
 [^ref-ghes]: https://github.com/enterprise — accessed 2026-05-23
 [^ref-copilot-coding-agent]: https://docs.github.com/en/copilot/using-github-copilot/using-copilot-coding-agent-to-work-on-tasks — accessed 2026-05-23; GitHub Copilot Coding Agent (official GitHub Copilot feature): researches a repository, creates implementation plans, makes code changes on a branch, and opens a pull request for review. Autonomous PR creation is documented; triage/labelling and repro are not.
 [^ref-copilot-code-review]: https://docs.github.com/en/copilot/using-github-copilot/code-review/using-copilot-code-review — accessed 2026-05-23; GitHub Copilot Code Review (official native GitHub feature): reviews pull requests and provides inline suggestions; triggered via Reviewers panel, CLI (`--reviewer @copilot`), or IDE integration.
+[^ref-zenhub-pricing]: https://www.zenhub.com/pricing — accessed 2026-05-23; Freemium model: Free (2 repos, 50 users), Teams ($4.99/user/month billed annually), Enterprise (custom pricing, self-hosted option available).
+[^ref-zenhub-enterprise]: https://www.zenhub.com/enterprise — accessed 2026-05-23; ZenHub Enterprise Server currently sold; supports Kubernetes and VM deployments (AWS EC2, VMware, Hyper-V, Azure, KVM, GCP); features SSO/SAML/LDAP, custom roles and permissions, audit logs, up to 10 connected GitHub organizations.
+[^ref-zenhub-workspaces]: https://www.zenhub.com/workspaces — accessed 2026-05-23; A workspace aggregates issues from multiple GitHub repositories into a single board; boards, reports, and roadmaps are workspace-scoped; cross-workspace aggregation is not supported.
+[^ref-zenhub-api]: https://www.zenhub.com/developers — accessed 2026-05-23; ZenHub GraphQL API allows programmatic updates to sprints, epics, and estimates — these are ZenHub-native constructs stored in ZenHub's own database, not in GitHub issues; GitHub issues remain the canonical source for issue content.
+[^ref-zenhub-ai]: https://www.zenhub.com/ai — accessed 2026-05-23; Native ZenHub AI features: AI Labels (suggests labels from issue data), AI Sprint Reviews (auto-generates sprint summaries), AI Acceptance Criteria (suggests acceptance criteria from issue description); no specific AI partner disclosed; ZenHub uses commercial and fine-tuned open-source models.
+[^ref-waffle-shutdown]: https://github.com/waffleio — accessed 2026-05-23; GitHub organization archived by administrator on 2025-07-24, marked as no longer maintained; homepage waffle.io is a parked domain for sale.
