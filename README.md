@@ -86,7 +86,79 @@ Tools were verified by fetching each tool's official homepage and features/docs 
 
 ## 5. Tool deep dives
 
-<!-- POPULATED IN TASK 10 — one short subsection per tool scoring ✅ or 🟡 on at least one tier -->
+Twelve tools scored ✅ or 🟡 on at least one tier in Table 2 and receive a dedicated subsection below; they are ordered to match the group sequence in Tables 1 and 2. Waffle.io and Height were excluded from this section entirely because both failed all four tiers (defunct services with no GitHub sync capability).
+
+### GitHub Projects v2
+
+GitHub Projects v2 is the native kanban board built into GitHub, accessed from any org or personal account without installing anything extra.[^ref-gh-projects-docs] It is the strongest option at Personal and Small Team tiers because it reads and writes GitHub issues directly, needs no sync layer, and includes Copilot code review and the Copilot Coding Agent out of the box.[^ref-copilot-coding-agent][^ref-copilot-code-review] The tier-fit ceiling is the Enterprise story: SSO/SAML and expanded security controls require the GitHub Enterprise Cloud or GHES plans, and Projects itself adds no enterprise-specific auth beyond what GHE provides.[^ref-ghes] At the OSS Maintainer tier the gap is inbound triage — high-volume labelling from strangers remains manual because Copilot does not yet offer a zero-config triage agent. The self-host path exists via GHES, but it is a full GitHub appliance rather than an isolated Projects deployment.
+
+**Links:** [Homepage](https://github.com/features/issues) · [Docs](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects)
+
+### GitHub Issues
+
+GitHub Issues is the baseline issue tracker underlying every other tool in this survey — it has no board view of its own and offers only list or search-based cross-repo aggregation.[^ref-gh-issues-docs] For a solo developer it is free and zero-overhead, but the absence of a board surface and the inability to pin a cross-repo view in one place are real friction points that keep it at 🟡 rather than ✅ for Personal use. At OSS Maintainer and Enterprise tiers it scores ❌ because there is no project-level RBAC, no audit log, and triage at scale across public repos is entirely manual. Copilot's coding agent and code review can attach to any issue or PR,[^ref-copilot-coding-agent][^ref-copilot-code-review] so AI resolution is available, but triage automation is not.
+
+**Links:** [Homepage](https://docs.github.com/en/issues) · [Docs](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
+
+### ZenHub
+
+ZenHub is a GitHub-overlay board delivered as a browser extension and GitHub App, storing its sprint, epic, and estimate metadata in its own database while leaving issue content canonical in GitHub.[^ref-zenhub-api] At the Small Team and Enterprise tiers it is a strong fit: native AI Labels suggest labels from issue data, AI Sprint Reviews auto-generate sprint summaries, and ZenHub Enterprise Server adds SSO/SAML, LDAP, custom roles, audit logs, and connection to up to 10 GitHub orgs.[^ref-zenhub-ai][^ref-zenhub-enterprise] The Personal tier is capped at 2 repos on the free plan, which is too narrow for a developer with many repos across orgs.[^ref-zenhub-pricing] At the OSS Maintainer tier the workspace boundary means cross-repo aggregation works but cross-workspace aggregation does not, and there is no auto-routing triage for anonymous inbound issues.[^ref-zenhub-workspaces]
+
+**Links:** [Homepage](https://www.zenhub.com/) · [GitHub integration docs](https://www.zenhub.com/workspaces) · [Pricing](https://www.zenhub.com/pricing)
+
+### Linear
+
+Linear is a SaaS-only project management tool with a bidirectional GitHub sync that connects multiple repos to a single team board, though only one repo at a time supports full two-way sync.[^ref-linear-gh] Its native Triage Intelligence (Business plan and above) auto-suggests assignees, labels, teams, and projects and detects duplicates without requiring a separate agent platform.[^ref-linear-ai] The SaaS-only deployment is the main constraint: it rules out self-hosted teams and, at the OSS Maintainer tier, per-seat pricing is unviable for anonymous public contributors who should never need seats.[^ref-linear-pricing] The Enterprise tier is a good fit because SAML/SCIM, strong cross-repo board, and documented integrations with Copilot, Cursor, and Devin are all present.[^ref-linear-agents]
+
+**Links:** [Homepage](https://linear.app/) · [GitHub integration docs](https://linear.app/docs/github) · [Pricing](https://linear.app/pricing)
+
+### Jira
+
+Jira Cloud's GitHub for Jira app syncs PRs, branches, builds, commits, and deployments into Jira in real time, supporting GitHub Cloud and both Enterprise variants with unlimited orgs and repos.[^ref-jira-gh-app] It is an Enterprise-tier tool at heart: SSO/SAML, RBAC, audit logs, and more than 3 000 integrations make it well-suited to large multi-team deployments.[^ref-jira-pricing] The Personal and OSS Maintainer tiers are hard fails — per-seat pricing starts overkill at solo scale, and the free plan's 10-user cap cannot support anonymous public contributors.[^ref-jira-pricing] Rovo AI (Standard plan and above) offers auto-assign suggestions and natural-language JQL but does not deliver zero-config inbound triage routing as a discrete feature.[^ref-jira-ai] Data Center (self-managed) sales ended in March 2026, so new buyers are locked into SaaS.[^ref-jira-pricing]
+
+**Links:** [Homepage](https://www.atlassian.com/software/jira) · [GitHub integration docs](https://marketplace.atlassian.com/apps/1219592/github-for-jira) · [Pricing](https://www.atlassian.com/software/jira/pricing)
+
+### Shortcut
+
+Shortcut is a SaaS-only PM board whose GitHub integration attaches commits, branches, and PRs to Stories and auto-advances Story workflow states as PRs move through their lifecycle.[^ref-shortcut-gh] Stories are repo-agnostic, so a single board can reference PRs from multiple repositories without any extra configuration.[^ref-shortcut-gh] The native AI product, Korey, converts unstructured input into Stories and generates status summaries, but autonomous PR creation and inbound triage labelling are not documented Korey capabilities.[^ref-shortcut-korey] At the Enterprise tier, SSO/SAML/SCIM and SOC 2 Type II are available, making it viable for security-conscious teams.[^ref-shortcut-pricing] The OSS Maintainer tier fails because per-seat SaaS pricing cannot accommodate anonymous contributors and Korey's triage on public repos is unverified.[^ref-shortcut-pricing]
+
+**Links:** [Homepage](https://www.shortcut.com/) · [GitHub integration docs](https://www.shortcut.com/integrations/github) · [Pricing](https://www.shortcut.com/pricing)
+
+### Trello
+
+Trello is a SaaS-only kanban board that connects to GitHub via the GitHub Power-Up, which attaches branches, commits, issues, and PRs to cards and displays metadata badges — but does not drive board state from PR lifecycle events.[^ref-trello-gh-powerup] GitHub issues are not aggregated into a cross-repo board view; Trello cards are the primary record and GitHub items are attachments.[^ref-trello-gh-powerup] The Personal tier gets a 🟡 because the free plan is usable and GitHub items link to cards, but there is no GH-issue-native board experience.[^ref-trello-pricing] Enterprise SSO requires a separate Atlassian Guard subscription rather than being bundled, which limits the Enterprise cell to 🟡.[^ref-trello-pricing] There is no triage AI, no PR review capability, and no self-host option at any tier.
+
+**Links:** [Homepage](https://trello.com/) · [GitHub integration docs](https://support.atlassian.com/trello/docs/using-the-github-power-up/) · [Pricing](https://trello.com/pricing)
+
+### Notion
+
+Notion's GitHub integration (requiring the Business plan) creates a synced database from a GitHub repository URL, pulling issues, PRs, labels, and status into Notion continuously — but sync is strictly one-directional and edits must be made in GitHub to appear in Notion.[^ref-notion-gh-sync] Multi-repo aggregation into a single Notion database is not documented, so the cross-repo story is at best partial.[^ref-notion-gh-sync] Notion AI is a generic LLM assistant with no GitHub-specific triage or labelling capability.[^ref-notion-gh-sync] The Business-plan requirement for any GitHub sync makes it costly at the Personal tier and unscalable at OSS Maintainer tier.[^ref-notion-pricing] Enterprise SSO/SAML/SCIM and audit logs are available, keeping the Enterprise cell at 🟡, but the absence of a GH-native board or triage AI prevents a full ✅ there too.
+
+**Links:** [Homepage](https://www.notion.com/) · [GitHub integration docs](https://www.notion.com/integrations/github) · [Pricing](https://www.notion.com/pricing)
+
+### YouTrack
+
+YouTrack is a full-featured PM board from JetBrains available free for up to 10 users on both SaaS and self-hosted deployments, making it uniquely cost-effective across Personal, Small Team, and Enterprise tiers.[^ref-youtrack-pricing] Its GitHub VCS integration links commits and branches to YouTrack issues via commit messages, and PR status appears in the issue activity stream — though GitHub issues are not imported and YouTrack remains the primary database.[^ref-youtrack-gh] Cross-project boards aggregate across multiple projects, delivering effective cross-repo visibility.[^ref-youtrack-gh] There is no triage AI: JetBrains AI features cover writing assistance and summaries, not inbound issue routing or labelling.[^ref-youtrack-pricing] Enterprise deployments gain SSO/SAML, RBAC, and the choice of cloud or on-premises, with GitHub integration working in both.[^ref-youtrack-gh]
+
+**Links:** [Homepage](https://www.jetbrains.com/youtrack/) · [GitHub integration docs](https://www.jetbrains.com/help/youtrack/server/github-integration.html) · [Pricing](https://www.jetbrains.com/youtrack/features/)
+
+### Plane
+
+Plane is an AGPL-3.0 project management tool with a first-party bidirectional GitHub sync covering issues, titles, descriptions, assignees, labels, states, and comments, plus PR-state automation triggered by work item IDs in PR titles.[^ref-plane-gh] Native built-in agents handle triage, owner assignment, blocker tracking, and status updates without requiring a separate agent platform, and AI credits are included on all tiers including Free.[^ref-plane-ai] The catch at Personal tier is that GitHub integration requires the Pro plan or a self-hosted deployment — the Free SaaS tier excludes it.[^ref-plane-pricing] Self-hosting via Docker or Kubernetes is supported across all editions, giving teams full control over data and cost.[^ref-plane-pricing] At Enterprise, the Grid plan adds RBAC, SSO, and the full AI agent suite, making Plane one of the few self-hostable tools with a credible enterprise AI story.[^ref-plane-pricing]
+
+**Links:** [Homepage](https://plane.so/) · [GitHub integration docs](https://docs.plane.so/integrations/github) · [Pricing](https://plane.so/pricing)
+
+### Taiga
+
+Taiga is an MPL-2.0 project management tool for agile teams, available as SaaS or self-hosted, with a one-directional GitHub integration: GitHub can push events to Taiga but Taiga cannot write back to GitHub.[^ref-taiga-gh] The integration supports push events, issue creation, and issue comments, but has no pull request support and no cross-repo aggregation — each Taiga project maps to one GitHub repository.[^ref-taiga-gh] There is no triage AI, no PR sync, and the GitHub-to-Taiga direction limits how well board state reflects the actual development workflow. At Personal and Small Team tiers it gets a 🟡 because self-hosting is free and the basic issue-reflection use case is met, despite the one-way limitation.[^ref-taiga-license] At OSS Maintainer and Enterprise tiers the absence of PR sync and cross-repo aggregation are hard practical gaps, though self-hosting, RBAC, and active development keep it at 🟡 for Enterprise.
+
+**Links:** [Homepage](https://taiga.io/) · [GitHub integration docs](https://docs.taiga.io/integrations-github.html)
+
+### OpenProject
+
+OpenProject is a GPL-3.0 project management tool with a first-party GitHub integration available even in the free Community edition, displaying PR status and GitHub Actions results inside work packages via webhook events.[^ref-openproject-gh] Sync is one-directional — GitHub sends events to OpenProject but OpenProject does not write back — and linking is achieved via work package URLs or `OP#87`-style IDs in PR descriptions.[^ref-openproject-gh] Cross-project boards aggregate across multiple projects, providing effective cross-repo PR visibility without a separate aggregation step.[^ref-openproject-gh] There is no triage AI; all labelling and routing remains manual.[^ref-openproject-pricing] Enterprise on-premises deployments add SSO/SAML and RBAC, and the GitHub integration ships in the community edition so no paid upgrade is required to use it.[^ref-openproject-pricing]
+
+**Links:** [Homepage](https://www.openproject.org/) · [GitHub integration docs](https://www.openproject.org/docs/system-admin-guide/integrations/github-integration/) · [Pricing](https://www.openproject.org/pricing/)
 
 ## 6. Excluded — no GitHub sync (verified)
 
