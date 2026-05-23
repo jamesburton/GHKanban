@@ -68,7 +68,7 @@ Tools were verified by fetching each tool's official homepage and features/docs 
 | ZenHub | 🟡 Free tier capped at 2 repos; paid plan needed | ✅ Teams plan; cross-repo board; AI labels native | 🟡 Cross-repo board within workspace; no auto-routing triage | ✅ Enterprise on-prem; SSO/SAML; RBAC; audit logs |
 | Waffle.io | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked |
 | Linear | 🟡 Free capped at 250 issues; Triage AI needs Business plan | 🟡 Affordable per-seat; SaaS-only limits self-hosted teams | ❌ Per-seat SaaS pricing unviable for anonymous public contributors | ✅ Enterprise SAML/SCIM; strong cross-repo board and AI triage |
-| Jira | ❌ Per-seat pricing; 10-user free cap; overkill for solo use | 🟡 Standard plan workable; Rovo AI needs Premium; no self-host | ❌ Per-seat SaaS; no triage AI on free tier; OSS unscalable | ✅ Enterprise plan; SSO/SAML; RBAC; audit; 3000+ integrations |
+| Jira | ❌ Per-seat pricing; 10-user free cap; overkill for solo use | 🟡 Standard plan includes Rovo AI; SaaS-only for new buys | ❌ Per-seat SaaS; no triage AI on free tier; OSS unscalable | ✅ Enterprise plan; SSO/SAML; RBAC; audit; 3000+ integrations |
 | Shortcut | 🟡 Free tier 10 users; no cross-repo verified; SaaS only | 🟡 Affordable Team plan; SaaS-only; basic RBAC | ❌ Per-seat SaaS; Korey triage unverified on public repos | ✅ Enterprise SSO/SAML/SCIM; SOC 2; strong GitHub sync |
 | Height | ❌ Service defunct since September 2025 | ❌ Service defunct since September 2025 | ❌ Service defunct since September 2025 | ❌ Service defunct since September 2025 |
 
