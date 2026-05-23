@@ -194,7 +194,60 @@ The following tools were considered but failed GitHub-sync verification on 2026-
 
 ## 8. Recommendation per tier
 
-<!-- POPULATED IN TASK 11 — one block per tier + cross-tier finding -->
+### Tier: Personal / Solo
+
+**Recommended stack:** GitHub Projects v2 + Copilot Coding Agent
+**Why:** GitHub Projects v2 is free, requires no installation, and provides a native cross-repo board that reads and writes GitHub issues directly. Copilot Coding Agent adds autonomous PR creation and code review without a separate subscription beyond an existing Copilot seat. For a solo developer across many orgs, the zero-ops setup and free tier are decisive; no other surveyed tool matches this combination at no additional cost.
+**Gaps vs your must-haves:**
+- Self-hostable: 🟡 — GHES appliance only; no lightweight standalone Projects deployment.
+- Cross-repo, GH as truth, PR↔Issue sync: all ✅.
+**Build-our-own verdict:** Not justified
+**If building:** A custom tool at this tier would need to match GH Projects v2's zero-install UX and free-tier cost — a high bar. If the self-host gap matters (corporate proxy, air-gapped laptop), the §9 constraint of `dnx` zero-install execution with Blazor could deliver a lightweight kanban surface that runs entirely on-device without a GHES licence; but for most solo developers, the cost-benefit does not clear.
+
+---
+
+### Tier: Small Team (2–10)
+
+**Recommended stack:** GitHub Projects v2 + Copilot Coding Agent
+**Why:** At this tier GH Projects v2 continues to excel: org projects support shared boards with basic RBAC, Copilot code review gates merges natively, and the Copilot Coding Agent handles autonomous resolution. Seat pricing is manageable. ZenHub and Plane are defensible alternatives if stronger AI triage or self-hosting is a hard requirement, but they trade the GH-as-truth guarantee for those gains.
+**Gaps vs your must-haves:**
+- Self-hostable: 🟡 — GHES only; true self-host requires buying a GitHub Enterprise appliance.
+- Cross-repo, GH as truth, PR↔Issue sync: all ✅.
+**Build-our-own verdict:** Marginal
+**If building:** The only meaningful ecosystem gap at this tier is AI triage routing — automatically classifying inbound issues, assigning owners, and applying labels without manual review. A .NET 10 agent built on Microsoft Agent Framework (§9) and invoking GitHub's REST/GraphQL API for triage writes could slot in alongside GH Projects v2 without replacing it, but the effort is only warranted if native Copilot triage does not ship before the build completes.
+
+---
+
+### Tier: OSS Maintainer
+
+**Recommended stack:** GitHub Projects v2 + Augment Code (Work Dispatcher)
+**Why:** Zero surveyed tools scored ✅ at this tier — every option is 🟡 or ❌. GitHub Projects v2 is the least-bad base: public repos, cross-org boards, and Copilot resolution are all present. Augment Code's Work Dispatcher is the only Table 3 agent with native ✅ across all four AI capabilities including triage; it can scan open issues, apply a rubric, and route them without human intervention. Augment's per-seat pricing remains a concern for volunteer-contributor contexts.
+**Gaps vs your must-haves:**
+- Self-hostable: 🟡 — GHES only for the board surface; Augment Code is SaaS.
+- Triage AI: requires a paid Augment Code subscription not designed for OSS budgets.
+- Cross-repo, GH as truth, PR↔Issue sync: all ✅ via GH Projects v2.
+**Build-our-own verdict:** Justified
+**If building:** The OSS tier exposes the core gap: no surveyed self-hostable tool combines cross-repo kanban with automated inbound triage for public repos. A purpose-built .NET 10 tool (§9) could deliver a triage agent — using Microsoft Agent Framework for the orchestration loop and GitHub's REST API for label and assignment writes — that runs as a free GitHub Action or `dnx`-invoked CLI, making it viable for OSS maintainers without a paid Augment subscription.
+
+---
+
+### Tier: Enterprise / Multi-team
+
+**Recommended stack:** ZenHub Enterprise Server + Copilot Coding Agent
+**Why:** ZenHub Enterprise Server is the only commercially supported, on-premises overlay board with SSO/SAML, LDAP, custom RBAC, audit logs, and connection to up to 10 GitHub orgs. Native AI Labels and Sprint Reviews reduce analyst overhead. Pairing with the Copilot Coding Agent adds autonomous PR resolution. Linear Enterprise and Shortcut Enterprise are viable SaaS alternatives where on-prem is not a hard requirement.
+**Gaps vs your must-haves:**
+- GH as truth: 🟡 — sprint, epic, and estimate metadata lives in ZenHub's own database; issue content remains canonical in GitHub.
+- Cross-repo: 🟡 — aggregation is workspace-bounded; cross-workspace rollups are not supported natively.
+- Self-hostable: ✅ (Enterprise Server on-prem).
+- PR↔Issue sync: ✅.
+**Build-our-own verdict:** Not justified
+**If building:** An enterprise-tier build would require matching ZenHub's SSO/SAML/RBAC surface, which is a significant identity and compliance engineering investment beyond the functional kanban work. The §9 stack (Blazor Server + .NET Aspire + DPAPI/libsecret credential management) could support multi-tenant deployments, but the value over a licensed ZenHub Enterprise Server is unclear without a specific compliance requirement ZenHub does not meet — such as air-gapped deployments with no external licensing calls.
+
+---
+
+### Cross-tier finding
+
+No single stack serves all four tiers. Personal and Small Team are well served by GitHub Projects v2 with Copilot, where the native integration eliminates sync friction and the free or low-cost pricing fits the tier. Enterprise has multiple ✅ options — ZenHub Enterprise Server being the strongest for on-prem — but they diverge from the lightweight personal pick. The OSS Maintainer tier is the decisive outlier: not one surveyed tool earned a ✅, because high-volume inbound triage from anonymous strangers on public repos is a problem the market has not solved in a self-hostable, open-source-budget-friendly way. That gap — and only that gap — justifies building a new tool; any build decision grounded purely in Personal or Enterprise dissatisfaction with the current landscape is not supported by the survey data.
 
 ## 9. Technology constraints (if we build)
 
