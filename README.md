@@ -61,7 +61,7 @@ Tools were verified by fetching each tool's official homepage and features/docs 
 |------|------------------|---------------------|-----------------|---------------------------|
 | GitHub Projects v2 | ✅ Free tier; cross-repo board; Copilot AI available | ✅ Org projects; native AI review; reasonable seat pricing | 🟡 No auto-triage; high-volume labelling remains manual | 🟡 GHE plan needed for SSO/SAML; Projects feature itself lacks enterprise auth |
 | GitHub Issues | 🟡 Simple and free; no board or cross-repo aggregation | 🟡 Adequate for basics; no shared board view | ❌ No cross-repo board; high-volume manual triage does not scale | ❌ No project-level RBAC, audit logs, or board |
-| ZenHub | 🟡 Free tier capped at 2 repos; paid plan needed for real use | ✅ Teams plan; cross-repo board; AI labels native | 🟡 Cross-repo board within workspace; no auto-routing triage | ✅ Enterprise on-prem; SSO/SAML; RBAC; audit logs |
+| ZenHub | 🟡 Free tier capped at 2 repos; paid plan needed | ✅ Teams plan; cross-repo board; AI labels native | 🟡 Cross-repo board within workspace; no auto-routing triage | ✅ Enterprise on-prem; SSO/SAML; RBAC; audit logs |
 | Waffle.io | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked | ❌ Service defunct; domain parked |
 
 ## 5. Tool deep dives
