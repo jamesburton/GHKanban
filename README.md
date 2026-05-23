@@ -37,6 +37,8 @@ Tools were verified by fetching each tool's official homepage and features/docs 
 
 | Tool | License | Hosting | Primary surface | Cross-repo | GH as truth | Self-host | PR↔Issue | Triage | Repro | Autonomous PR | PR review | RBAC | Extensibility | Last verified |
 |------|---------|---------|-----------------|------------|-------------|-----------|----------|--------|-------|---------------|-----------|------|---------------|---------------|
+| [GitHub Projects v2](https://github.com/features/issues) | Commercial[^ref-gh-projects-docs] | SaaS (GHES self-host)[^ref-ghes] | Native GH board | ✅ | ✅ | 🟡 (GHES only) | ✅ | ❌ | ❌ | ✅[^ref-copilot-coding-agent] | ✅[^ref-copilot-code-review] | ✅ | ✅ | 2026-05-23 |
+| [GitHub Issues](https://docs.github.com/en/issues) | Commercial[^ref-gh-issues-docs] | SaaS (GHES self-host)[^ref-ghes] | Issues list (no board) | 🟡 (search/API cross-repo; no board) | ✅ | 🟡 (GHES only) | 🟡 (keyword linking; no board state sync) | ❌ | ❌ | ✅[^ref-copilot-coding-agent] | ✅[^ref-copilot-code-review] | 🟡 (repo-level only) | ✅ | 2026-05-23 |
 
 ## 4. Tier-fit matrix (Table 2)
 
@@ -55,6 +57,8 @@ Tools were verified by fetching each tool's official homepage and features/docs 
 
 | Tool | Personal / Solo | Small Team (2–10) | OSS Maintainer | Enterprise / Multi-team |
 |------|------------------|---------------------|-----------------|---------------------------|
+| GitHub Projects v2 | ✅ Free tier; cross-repo board; Copilot AI available | ✅ Org projects; native AI review; reasonable seat pricing | 🟡 No auto-triage; high-volume labelling remains manual | 🟡 GHE plan needed for SSO/SAML; Projects feature itself lacks enterprise auth |
+| GitHub Issues | 🟡 Simple and free; no board or cross-repo aggregation | 🟡 Adequate for basics; no shared board view | ❌ No cross-repo board; high-volume manual triage does not scale | ❌ No project-level RBAC, audit logs, or board |
 
 ## 5. Tool deep dives
 
@@ -93,3 +97,9 @@ Applies only if the recommendation rubric concludes that building is justified.
 ## 10. Sources
 
 <!-- POPULATED INCREMENTALLY THROUGHOUT TASKS 2-9 -->
+
+[^ref-gh-projects-docs]: https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects — accessed 2026-05-23
+[^ref-gh-issues-docs]: https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues — accessed 2026-05-23
+[^ref-ghes]: https://github.com/enterprise — accessed 2026-05-23
+[^ref-copilot-coding-agent]: https://docs.github.com/en/copilot/using-github-copilot/using-copilot-coding-agent-to-work-on-tasks — accessed 2026-05-23; GitHub Copilot Coding Agent (official GitHub Copilot feature): researches a repository, creates implementation plans, makes code changes on a branch, and opens a pull request for review. Autonomous PR creation is documented; triage/labelling and repro are not.
+[^ref-copilot-code-review]: https://docs.github.com/en/copilot/using-github-copilot/code-review/using-copilot-code-review — accessed 2026-05-23; GitHub Copilot Code Review (official native GitHub feature): reviews pull requests and provides inline suggestions; triggered via Reviewers panel, CLI (`--reviewer @copilot`), or IDE integration.
