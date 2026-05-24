@@ -8,6 +8,7 @@
     <ProjectReference Include="..\GHKanban.Rules\GHKanban.Rules.csproj" />
     <ProjectReference Include="..\GHKanban.GitHub\GHKanban.GitHub.csproj" />
     <ProjectReference Include="..\GHKanban.Sync\GHKanban.Sync.csproj" />
+    <ProjectReference Include="..\GHKanban.ContainerRuntime\GHKanban.ContainerRuntime.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>Library</OutputType>

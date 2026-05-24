@@ -1,7 +1,9 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/GHKanban.AgentImage/GHKanban.AgentImage.csproj" />
     <Project Path="src/GHKanban.Agents/GHKanban.Agents.csproj" />
     <Project Path="src/GHKanban.Config/GHKanban.Config.csproj" />
+    <Project Path="src/GHKanban.ContainerRuntime/GHKanban.ContainerRuntime.csproj" />
     <Project Path="src/GHKanban.Core/GHKanban.Core.csproj" />
     <Project Path="src/GHKanban.GitHub/GHKanban.GitHub.csproj" />
     <Project Path="src/GHKanban.Rules/GHKanban.Rules.csproj" />
@@ -9,8 +11,10 @@
     <Project Path="src/GHKanban.Web/GHKanban.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/GHKanban.AgentImage.Tests/GHKanban.AgentImage.Tests.csproj" />
     <Project Path="tests/GHKanban.Agents.Tests/GHKanban.Agents.Tests.csproj" />
     <Project Path="tests/GHKanban.Config.Tests/GHKanban.Config.Tests.csproj" />
+    <Project Path="tests/GHKanban.ContainerRuntime.Tests/GHKanban.ContainerRuntime.Tests.csproj" />
     <Project Path="tests/GHKanban.Core.Tests/GHKanban.Core.Tests.csproj" />
     <Project Path="tests/GHKanban.GitHub.Tests/GHKanban.GitHub.Tests.csproj" />
     <Project Path="tests/GHKanban.Rules.Tests/GHKanban.Rules.Tests.csproj" />
