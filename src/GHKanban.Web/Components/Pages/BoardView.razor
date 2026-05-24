@@ -40,11 +40,17 @@ else
         _board = Configs.Current.Boards.FirstOrDefault(b => b.Id == BoardId);
         if (_board is null) return;
 
+        // Populate placement synchronously so the first render (before the await below) finds
+        // entries for every column. Without this Blazor renders with _placement empty and the
+        // `_placement[col.Name]` indexer throws KeyNotFoundException.
+        RecomputePlacement();
+        Issues.OnChange += HandleChange;
+
         try { _currentUser = await Reader.GetCurrentUserLoginAsync(); }
         catch { _currentUser = ""; }
 
+        // Recompute now that the current user is known (affects `assignee-of-mine` rules).
         RecomputePlacement();
-        Issues.OnChange += HandleChange;
     }
 
     private void HandleChange() => InvokeAsync(() => { RecomputePlacement(); StateHasChanged(); });
