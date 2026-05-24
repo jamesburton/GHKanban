@@ -78,4 +78,59 @@ public class YamlConfigLoaderTests
         Assert.Equal(TimeSpan.FromMinutes(5), cfg.PollInterval);
         Assert.Equal(TimeSpan.FromMinutes(30), cfg.ReconcileInterval);
     }
+
+    [Fact]
+    public void LoadsAgentConfigWithContainerSection()
+    {
+        var yaml = """
+            name: Summariser
+            implementation: container
+            triggers:
+              - on: issue.opened
+                when: not has-label("nosummary")
+            container:
+              image: ghcr.io/jamesburton/ghkanban-agent:0.2.0
+              llm:
+                provider: anthropic
+                model: claude-sonnet-4-6
+                api-key-env: ANTHROPIC_API_KEY
+              prompt:
+                system: ./files/system.md
+                user: |
+                  Summarise: {{issue.title}}
+              tools:
+                - github.post-comment
+              timeout: 60s
+              resources:
+                cpu: 1
+                memory: 512m
+            """;
+        var cfg = YamlConfigLoader.LoadAgentConfig("summariser", yaml);
+        Assert.Equal("container", cfg.Implementation);
+        Assert.NotNull(cfg.Container);
+        Assert.Equal("ghcr.io/jamesburton/ghkanban-agent:0.2.0", cfg.Container!.Image);
+        Assert.Equal("anthropic", cfg.Container.Llm.Provider);
+        Assert.Equal("ANTHROPIC_API_KEY", cfg.Container.Llm.ApiKeyEnv);
+        Assert.Equal("./files/system.md", cfg.Container.Prompt.SystemFile);
+        Assert.Contains("Summarise:", cfg.Container.Prompt.User);
+        Assert.Single(cfg.Container.Tools);
+        Assert.Equal(TimeSpan.FromSeconds(60), cfg.Container.Timeout);
+        Assert.Equal(1.0, cfg.Container.CpuLimit);
+        Assert.Equal(512L * 1024 * 1024, cfg.Container.MemoryBytes);
+    }
+
+    [Fact]
+    public void LoadsAgentConfigWithoutContainerSection()
+    {
+        var yaml = """
+            name: Stub
+            implementation: stub
+            triggers:
+              - on: issue.labeled
+                when: has-label("x")
+            """;
+        var cfg = YamlConfigLoader.LoadAgentConfig("stub", yaml);
+        Assert.Equal("stub", cfg.Implementation);
+        Assert.Null(cfg.Container);
+    }
 }

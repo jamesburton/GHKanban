@@ -63,11 +63,28 @@ public static class YamlConfigLoader
         return new BoardConfig(id, raw.Name ?? id, scope, cols);
     }
 
+    private sealed class RawContainer
+    {
+        public string? Image { get; set; }
+        public RawLlm? Llm { get; set; }
+        public RawPrompt? Prompt { get; set; }
+        public List<string>? Tools { get; set; }
+        public string? Timeout { get; set; }
+        public RawResources? Resources { get; set; }
+    }
+
+    private sealed class RawLlm { public string? Provider { get; set; } public string? Model { get; set; } public string? ApiKeyEnv { get; set; } }
+
+    private sealed class RawPrompt { public string? System { get; set; } public string? User { get; set; } }
+
+    private sealed class RawResources { public double? Cpu { get; set; } public string? Memory { get; set; } }
+
     private sealed class RawAgent
     {
         public string? Name { get; set; }
         public string? Implementation { get; set; }
         public List<RawTrigger>? Triggers { get; set; }
+        public RawContainer? Container { get; set; }
     }
 
     private sealed class RawTrigger { public string? On { get; set; } public string? When { get; set; } }
@@ -79,9 +96,42 @@ public static class YamlConfigLoader
             .Select(t => new TriggerSpec(t.On ?? throw new InvalidOperationException("trigger.on required"),
                                          t.When ?? "true"))
             .ToList();
-        return new AgentConfig(id, raw.Name ?? id,
-            raw.Implementation ?? throw new InvalidOperationException("implementation required"),
-            triggers);
+
+        ContainerAgentSpec? container = null;
+        if (raw.Container is not null)
+        {
+            var c = raw.Container;
+            container = new ContainerAgentSpec(
+                Image: c.Image ?? throw new InvalidOperationException("container.image required"),
+                Llm: new ContainerLlmSpec(
+                    Provider: c.Llm?.Provider ?? "none",
+                    Model: c.Llm?.Model,
+                    ApiKeyEnv: c.Llm?.ApiKeyEnv),
+                Prompt: new ContainerPromptSpec(
+                    SystemFile: c.Prompt?.System,
+                    User: c.Prompt?.User ?? throw new InvalidOperationException("container.prompt.user required")),
+                Tools: c.Tools ?? new List<string>(),
+                Timeout: ParseDuration(c.Timeout) ?? TimeSpan.FromSeconds(60),
+                CpuLimit: c.Resources?.Cpu ?? 1.0,
+                MemoryBytes: ParseMemory(c.Resources?.Memory) ?? 512L * 1024 * 1024);
+        }
+
+        return new AgentConfig(
+            Id: id,
+            Name: raw.Name ?? id,
+            Implementation: raw.Implementation ?? "stub",
+            Triggers: triggers,
+            Container: container);
+    }
+
+    private static long? ParseMemory(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return null;
+        s = s.Trim().ToLowerInvariant();
+        if (s.EndsWith("g")) return long.Parse(s[..^1]) * 1024L * 1024 * 1024;
+        if (s.EndsWith("m")) return long.Parse(s[..^1]) * 1024L * 1024;
+        if (s.EndsWith("k")) return long.Parse(s[..^1]) * 1024;
+        return long.Parse(s);
     }
 
     private static TimeSpan? ParseDuration(string? s)
