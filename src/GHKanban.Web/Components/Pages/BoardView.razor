@@ -1,0 +1,71 @@
+@page "/board/{BoardId}"
+@inject ConfigStore Configs
+@inject IssueModelStore Issues
+@inject GHKanban.GitHub.IGitHubReader Reader
+@implements IDisposable
+
+@if (_board is null)
+{
+    <p>Board <code>@BoardId</code> not found.</p>
+}
+else
+{
+    <h1>@_board.Name</h1>
+    <div class="board">
+        @foreach (var col in _board.Columns)
+        {
+            <div class="column">
+                <h3>@col.Name <span class="meta">(@_placement[col.Name].Count)</span></h3>
+                @foreach (var i in _placement[col.Name])
+                {
+                    <div class="card">
+                        <a href="@i.HtmlUrl" target="_blank">@i.Repo#@i.Number</a> — @i.Title
+                        <div class="meta">@string.Join(", ", i.Labels) · @i.UpdatedAt.UtcDateTime.ToString("yyyy-MM-dd HH:mm")</div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string BoardId { get; set; } = "";
+
+    private BoardConfig? _board;
+    private Dictionary<string, List<IssueView>> _placement = new();
+    private string _currentUser = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _board = Configs.Current.Boards.FirstOrDefault(b => b.Id == BoardId);
+        if (_board is null) return;
+
+        try { _currentUser = await Reader.GetCurrentUserLoginAsync(); }
+        catch { _currentUser = ""; }
+
+        RecomputePlacement();
+        Issues.OnChange += HandleChange;
+    }
+
+    private void HandleChange() => InvokeAsync(() => { RecomputePlacement(); StateHasChanged(); });
+
+    private void RecomputePlacement()
+    {
+        if (_board is null) return;
+        var now = DateTimeOffset.UtcNow;
+        var evaluator = new RuleEvaluator(now, _currentUser);
+        var parsed = _board.Columns
+            .Select(c => (Col: c, Ast: RuleParser.Parse(c.Rule)))
+            .ToList();
+
+        _placement = _board.Columns.ToDictionary(c => c.Name, _ => new List<IssueView>());
+
+        foreach (var issue in Issues.GetIssuesForRepos(_board.Scope.Repos))
+        {
+            var col = parsed.FirstOrDefault(p => evaluator.Evaluate(p.Ast, issue));
+            if (col.Col is not null) _placement[col.Col.Name].Add(issue);
+        }
+    }
+
+    public void Dispose() => Issues.OnChange -= HandleChange;
+}
