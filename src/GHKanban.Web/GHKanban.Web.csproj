@@ -19,7 +19,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>ghkanban</ToolCommandName>
     <PackageId>GHKanban</PackageId>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.2.0-alpha</Version>
     <Description>Customisable Kanban view over GitHub Issues with AI agent triggers.</Description>
     <Authors>James Burton</Authors>
     <PackageProjectUrl>https://github.com/jamesburton/GHKanban</PackageProjectUrl>
