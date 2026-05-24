@@ -1,0 +1,26 @@
+@page "/"
+@inject ConfigStore Configs
+
+<h1>Boards</h1>
+
+@if (Configs.Current.Errors.Count > 0)
+{
+    <div class="error">
+        <strong>Config errors:</strong>
+        <ul>@foreach (var e in Configs.Current.Errors) { <li>@e</li> }</ul>
+    </div>
+}
+
+@if (Configs.Current.Boards.Count == 0)
+{
+    <p>No boards configured. Create a YAML file under <code>~/.ghkanban/boards/</code>.</p>
+}
+else
+{
+    <ul>
+        @foreach (var b in Configs.Current.Boards)
+        {
+            <li><a href="@($"/board/{b.Id}")">@b.Name</a></li>
+        }
+    </ul>
+}
