@@ -1,4 +1,3 @@
-using GHKanban.Agents;
 using GHKanban.Config;
 using GHKanban.GitHub;
 using GHKanban.Sync;
@@ -13,7 +12,6 @@ public static class WebhookEndpoint
             HttpContext ctx,
             ConfigStore configStore,
             WebhookEventProcessor processor,
-            AgentDispatcher dispatcher,
             ILogger<WebhookEndpointMarker> log) =>
         {
             using var reader = new StreamReader(ctx.Request.Body);
@@ -40,8 +38,9 @@ public static class WebhookEndpoint
                 return Results.Ok();
             }
 
-            await processor.Writer.WriteAsync(ev);
-            await dispatcher.DispatchAsync(ev, snap.Agents, ctx.RequestAborted);
+            // Single dispatch path: write to channel; the WebhookEventProcessor consumer updates
+            // the store AND invokes OnEvent (wired in Program.cs to the agent dispatcher).
+            await processor.Writer.WriteAsync(ev, ctx.RequestAborted);
             return Results.Ok();
         });
     }

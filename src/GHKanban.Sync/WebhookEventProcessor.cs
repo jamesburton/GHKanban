@@ -28,6 +28,14 @@ public sealed class WebhookEventProcessor : BackgroundService
     /// <summary>Reader side (primarily for testing).</summary>
     public ChannelReader<IssueEvent> Reader => _channel.Reader;
 
+    /// <summary>
+    /// Optional hook invoked after the store is updated for each event drained from the channel.
+    /// Set by composition root (Program.cs) to route events to the agent dispatcher. Kept as a
+    /// settable delegate rather than a constructor dependency to avoid creating a Sync → Agents
+    /// project reference cycle (Agents already depends on Sync for SQLite schema/stores).
+    /// </summary>
+    public Func<IssueEvent, CancellationToken, Task>? OnEvent { get; set; }
+
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
@@ -35,6 +43,11 @@ public sealed class WebhookEventProcessor : BackgroundService
         {
             _store.Upsert(ev.Issue);
             _log.LogInformation("Webhook event {Type} for {Repo}#{Number}", ev.Type, ev.Issue.Repo, ev.Issue.Number);
+            if (OnEvent is not null)
+            {
+                try { await OnEvent(ev, ct); }
+                catch (Exception ex) { _log.LogError(ex, "OnEvent handler failed for {Repo}#{Number}", ev.Issue.Repo, ev.Issue.Number); }
+            }
         }
     }
 }

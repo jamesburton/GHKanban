@@ -5,10 +5,21 @@ using Microsoft.Extensions.Logging;
 namespace GHKanban.Agents;
 
 /// <summary>
+/// Dispatches issue events to agents whose configured triggers match. Implemented by
+/// <see cref="AgentDispatcher"/>; abstracted so the channel consumer (WebhookEventProcessor) can
+/// depend on it without taking on the agent-resolution machinery (and so tests can stub it).
+/// </summary>
+public interface IAgentDispatcher
+{
+    /// <summary>Evaluates each config's triggers against <paramref name="ev"/> and invokes matching agents.</summary>
+    Task DispatchAsync(IssueEvent ev, IEnumerable<AgentConfig> configs, CancellationToken ct);
+}
+
+/// <summary>
 /// Routes an <see cref="IssueEvent"/> to every registered <see cref="IGHKanbanAgent"/> whose
 /// <see cref="AgentConfig"/> triggers match, then records the outcome via <see cref="AgentRunStore"/>.
 /// </summary>
-public sealed class AgentDispatcher
+public sealed class AgentDispatcher : IAgentDispatcher
 {
     private readonly IReadOnlyDictionary<string, IGHKanbanAgent> _agents;
     private readonly AgentRunStore _runs;

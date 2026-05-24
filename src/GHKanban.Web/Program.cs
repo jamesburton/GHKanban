@@ -70,6 +70,14 @@ var app = builder.Build();
 // Start config watcher
 _ = app.Services.GetRequiredService<ConfigWatcher>();
 
+// Wire the channel consumer to the agent dispatcher. Both the webhook endpoint and the
+// polling delta detector write to the same channel; routing dispatch through OnEvent makes
+// both paths trigger agents uniformly.
+var processor = app.Services.GetRequiredService<WebhookEventProcessor>();
+var dispatcher = app.Services.GetRequiredService<AgentDispatcher>();
+var configStoreInstance = app.Services.GetRequiredService<ConfigStore>();
+processor.OnEvent = (ev, ct) => dispatcher.DispatchAsync(ev, configStoreInstance.Current.Agents, ct);
+
 app.MapWebhook();
 
 app.UseStaticFiles();
