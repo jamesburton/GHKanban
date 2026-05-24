@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GHKanban.Config\GHKanban.Config.csproj" />
     <ProjectReference Include="..\GHKanban.Core\GHKanban.Core.csproj" />
     <ProjectReference Include="..\GHKanban.GitHub\GHKanban.GitHub.csproj" />
     <ProjectReference Include="..\GHKanban.Rules\GHKanban.Rules.csproj" />
