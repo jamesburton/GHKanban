@@ -1,5 +1,7 @@
+using GHKanban.ContainerRuntime;
 using GHKanban.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace GHKanban.Agents;
 
@@ -25,6 +27,16 @@ public sealed class AgentRegistry
     /// </exception>
     public IGHKanbanAgent Resolve(AgentConfig config)
     {
+        if (string.Equals(config.Implementation, "container", StringComparison.OrdinalIgnoreCase))
+        {
+            var runtime = _services.GetRequiredService<IContainerRuntime>();
+            var dirs = _services.GetRequiredService<ContainerAgentDirs>();
+            var loggerFactory = _services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger<ContainerAgent>();
+            return new ContainerAgent(config.Name, config, runtime, dirs, logger);
+        }
+
+        // Existing in-process implementation lookup (Slice A path).
         var type = Type.GetType(config.Implementation)
                    ?? FindInLoadedAssemblies(config.Implementation)
                    ?? throw new InvalidOperationException($"Agent implementation not found: {config.Implementation}");
