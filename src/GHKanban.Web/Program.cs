@@ -73,6 +73,7 @@ _ = app.Services.GetRequiredService<ConfigWatcher>();
 app.MapWebhook();
 
 app.UseStaticFiles();
+app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Urls.Add($"http://localhost:{Environment.GetEnvironmentVariable("GHKANBAN_PORT") ?? "5454"}");
