@@ -1,0 +1,36 @@
+@page "/config"
+@inject ConfigStore Configs
+
+<h1>Configuration</h1>
+
+@if (Configs.Current.Errors.Count > 0)
+{
+    <div class="error">
+        <h2>Errors</h2>
+        <ul>@foreach (var e in Configs.Current.Errors) { <li>@e</li> }</ul>
+    </div>
+}
+
+<h2>GitHub</h2>
+<ul>
+    <li>PAT env var: <code>@Configs.Current.GitHub.Auth.PatEnv</code> (@(string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Configs.Current.GitHub.Auth.PatEnv)) ? "❌ not set" : "✅ set"))</li>
+    <li>Webhook URL: @(Configs.Current.GitHub.Webhook.PublicUrl ?? "(not configured — polling only)")</li>
+    <li>Poll interval: @Configs.Current.GitHub.PollInterval</li>
+    <li>Reconcile interval: @Configs.Current.GitHub.ReconcileInterval</li>
+</ul>
+
+<h2>Boards (@Configs.Current.Boards.Count)</h2>
+<ul>
+    @foreach (var b in Configs.Current.Boards)
+    {
+        <li><strong>@b.Name</strong> (@b.Id) — @b.Scope.Repos.Count repos, @b.Columns.Count columns</li>
+    }
+</ul>
+
+<h2>Agents (@Configs.Current.Agents.Count)</h2>
+<ul>
+    @foreach (var a in Configs.Current.Agents)
+    {
+        <li><strong>@a.Name</strong> — @a.Implementation — @a.Triggers.Count triggers</li>
+    }
+</ul>
