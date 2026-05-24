@@ -1,5 +1,6 @@
 using GHKanban.Agents;
 using GHKanban.Config;
+using GHKanban.ContainerRuntime;
 using GHKanban.GitHub;
 using GHKanban.Sync;
 using GHKanban.Web;
@@ -32,6 +33,20 @@ SqliteSchema.Apply(conn);
 builder.Services.AddSingleton(conn);
 builder.Services.AddSingleton<SyncCursorStore>();
 builder.Services.AddSingleton<AgentRunStore>();
+
+// Container runtime
+builder.Services.AddSingleton<IContainerRuntime, DockerContainerRuntime>();
+builder.Services.AddSingleton(new ContainerAgentDirs(
+    ConfigRoot: configRoot,
+    RunsRoot: Path.Combine(Path.GetTempPath(), "ghkanban", "runs")));
+builder.Services.AddHostedService<ContainerJanitor>();
+
+// Ensure runs dir exists.
+Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "ghkanban", "runs"));
+
+// Materialise secrets to disk (for mounting into containers).
+var secretsDir = Path.Combine(configRoot, "secrets");
+SecretFilePlumbing.WriteAll(secretsDir, initialSnapshot);
 
 // GitHub
 var pat = Environment.GetEnvironmentVariable(initialSnapshot.GitHub.Auth.PatEnv) ?? "";

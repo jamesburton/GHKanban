@@ -16,6 +16,13 @@ public static class FirstRunWizard
         Directory.CreateDirectory(configRoot);
         Directory.CreateDirectory(Path.Combine(configRoot, "boards"));
         Directory.CreateDirectory(Path.Combine(configRoot, "agents"));
+        Directory.CreateDirectory(Path.Combine(configRoot, "secrets"));
+
+        if (!OperatingSystem.IsWindows())
+        {
+            try { File.SetUnixFileMode(Path.Combine(configRoot, "secrets"), UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute); }
+            catch { /* best-effort */ }
+        }
 
         File.WriteAllText(Path.Combine(configRoot, "github.yaml"), """
             # GHKanban GitHub configuration
