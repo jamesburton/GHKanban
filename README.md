@@ -1,6 +1,55 @@
-# GHKanban — A Survey of GitHub-Backed Kanban Tools and AI-Agent Integrations
+# GHKanban
 
-> **Status:** Draft survey (started 2026-05-23). Each row's "Last verified" cell is the source-of-truth on freshness.
+A customisable Kanban view over GitHub Issues with AI-agent triggers. Self-hostable, zero-install via `dnx`, .NET 10 + Blazor Server, agents defined via Microsoft Agent Framework.
+
+**Status:** v1 (Slice A) — Kanban surface over GH Issues + stubbed agent proving the trigger → agent → GitHub-write loop end-to-end. See [`docs/superpowers/specs/2026-05-23-ghkanban-slice-a-design.md`](docs/superpowers/specs/2026-05-23-ghkanban-slice-a-design.md) for design and [`docs/superpowers/plans/2026-05-23-ghkanban-slice-a.md`](docs/superpowers/plans/2026-05-23-ghkanban-slice-a.md) for build history.
+
+## Quickstart
+
+Requires .NET 10 SDK and a GitHub Personal Access Token (`repo` scope, plus `read:org` for org-wide reads).
+
+```bash
+# Set your PAT
+export GHKANBAN_PAT=ghp_xxx   # Windows PowerShell: $env:GHKANBAN_PAT = "ghp_xxx"
+
+# Zero-install run (recommended)
+dnx GHKanban --prerelease
+
+# OR install as a global tool
+dotnet tool install -g GHKanban --prerelease
+ghkanban
+```
+
+First launch creates `~/.ghkanban/` with starter config (a `github.yaml`, an example board, and a stubbed agent registration). Open <http://localhost:5454>.
+
+To edit configuration: drop into `~/.ghkanban/` and edit the YAML files — changes are hot-reloaded.
+
+To enable real-time updates from GitHub webhooks (recommended for OSS-maintainer use): set `webhook.public-url` and `webhook.secret-env` in `~/.ghkanban/github.yaml` and configure the matching GitHub webhook to POST to that URL.
+
+## What's in this repo
+
+| Path | What it is |
+|---|---|
+| `src/`, `tests/` | The .NET 10 application — 7 src + 7 test projects |
+| `docs/superpowers/specs/` | Design specs (survey + build) |
+| `docs/superpowers/plans/` | Implementation plans |
+| `README.md` | This file — project intro + the original survey that informed the build (below) |
+
+## Roadmap
+
+- **Slice A (v1, done):** Kanban over GH Issues + stubbed in-process agent
+- **Slice B (next):** Container-based agent runtime, agent identity per GitHub App, real MAF agents with skills/memory volumes, Tailscale mesh for distributed agents
+- **Slice C (later):** Multi-user auth (GitHub OAuth), A2A communication, cluster mode with leader election
+
+## License
+
+TBD.
+
+---
+
+# Original survey: GitHub-Backed Kanban Tools and AI-Agent Integrations
+
+> **Status:** Draft survey (started 2026-05-23). Preserved as a record of how we arrived at the build decision. Each row's "Last verified" cell is the source-of-truth on freshness.
 
 ## 1. Purpose & method
 

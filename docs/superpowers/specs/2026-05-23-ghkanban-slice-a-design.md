@@ -294,11 +294,11 @@ If `~/.ghkanban/` doesn't exist on launch:
 ## 12. Acceptance criteria for v1
 
 1. `dnx ghkanban` launches successfully on a clean machine with only .NET 10 SDK installed; no other prerequisites.
-2. First-run wizard creates `~/.ghkanban/` with all four template files and prints setup instructions.
+2. First-run wizard creates `~/.ghkanban/` (with `boards/` and `agents/` subdirectories) plus three template files — `github.yaml`, `boards/example.yaml`, `agents/stub-ack.yaml` — and prints setup instructions.
 3. With a valid PAT and `boards/example.yaml` referencing real repos, the Kanban view at `/board/example` renders all in-scope issues, placed in their first-matching column.
 4. Column placement is correct against the published rule grammar — a curated test set of issues placed in expected columns.
 5. Adding a label to an issue in GitHub updates the corresponding card's position on the board within `poll-interval` (default 5m) without webhook, or within 5s with webhook configured.
-6. Configuring the stub agent's trigger (`on: issue.labeled, when: label == "ai-pls"`) and adding that label to an issue results in the stub posting a comment on the issue within 30s, with the comment text matching the documented format.
+6. Configuring the stub agent's trigger (`on: issue.labeled, when: has-label("ai-pls")`) and adding that label to an issue results in the stub posting a comment on the issue within 30s, with the comment text matching the documented format.
 7. Editing any YAML config file is reflected in the running app without restart (hot-reload).
 8. Invalid YAML or unknown rule syntax produces a clear error in `/config` view with file path + line/column info; the rest of the app continues running on the last-valid config.
 9. Reconciler runs every `reconcile-interval` and surfaces any reconciled state in the activity feed.
