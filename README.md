@@ -1,5 +1,8 @@
 # GHKanban
 
+[![CI](https://github.com/jamesburton/GHKanban/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jamesburton/GHKanban/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
+
 A customisable Kanban view over GitHub Issues with AI-agent triggers. Self-hostable, zero-install via `dnx`, .NET 10 + Blazor Server, agents defined via Microsoft Agent Framework.
 
 **Status:** v1 (Slice A) — Kanban surface over GH Issues + stubbed agent proving the trigger → agent → GitHub-write loop end-to-end. See [`docs/superpowers/specs/2026-05-23-ghkanban-slice-a-design.md`](docs/superpowers/specs/2026-05-23-ghkanban-slice-a-design.md) for design and [`docs/superpowers/plans/2026-05-23-ghkanban-slice-a.md`](docs/superpowers/plans/2026-05-23-ghkanban-slice-a.md) for build history.
@@ -40,6 +43,15 @@ To enable real-time updates from GitHub webhooks (recommended for OSS-maintainer
 - **Slice A (v1, done):** Kanban over GH Issues + stubbed in-process agent
 - **Slice B (next):** Container-based agent runtime, agent identity per GitHub App, real MAF agents with skills/memory volumes, Tailscale mesh for distributed agents
 - **Slice C (later):** Multi-user auth (GitHub OAuth), A2A communication, cluster mode with leader election
+
+## Releasing
+
+CI builds + tests + packs on every push to `main` and retains the `.nupkg` as a workflow artifact for 90 days. To publish a version to NuGet.org:
+
+1. Bump `<Version>` in `src/GHKanban.Web/GHKanban.Web.csproj`.
+2. Commit and push.
+3. Tag the release: `git tag v0.1.0 && git push --tags`.
+4. The `Publish to NuGet` workflow job runs automatically. It requires a `NUGET_API_KEY` repository secret — generate one at <https://www.nuget.org/account/apikeys> and add it under **Settings → Secrets and variables → Actions** before tagging.
 
 ## License
 
