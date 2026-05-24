@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\GHKanban.Core\GHKanban.Core.csproj" />
+    <ProjectReference Include="..\GHKanban.Rules\GHKanban.Rules.csproj" />
+    <ProjectReference Include="..\GHKanban.Config\GHKanban.Config.csproj" />
+    <ProjectReference Include="..\GHKanban.GitHub\GHKanban.GitHub.csproj" />
+    <ProjectReference Include="..\GHKanban.Sync\GHKanban.Sync.csproj" />
+    <ProjectReference Include="..\GHKanban.Agents\GHKanban.Agents.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>ghkanban</ToolCommandName>
+    <PackageId>GHKanban</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Description>Customisable Kanban view over GitHub Issues with AI agent triggers.</Description>
+  </PropertyGroup>
+</Project>
