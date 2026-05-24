@@ -1,0 +1,91 @@
+name: CI
+
+# Triggers:
+# - push to main:        build + test + pack (artifact retained for ~90 days)
+# - pull request:        build + test (no pack to keep PR jobs lean)
+# - tag push (v*):       build + test + pack + publish-to-NuGet (needs NUGET_API_KEY secret)
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs for the same ref (e.g. force-push to a PR branch).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build + test + pack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'ga'
+
+      - name: dotnet --info
+        run: dotnet --info
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build (warnings-as-errors)
+        run: dotnet build --no-restore -c Release
+
+      # MTP test projects run via `dotnet run --project` (not `dotnet test`) because of
+      # `UseMicrosoftTestingPlatformRunner=true`. See test csproj files for context.
+      - name: Test
+        shell: bash
+        run: |
+          set -e
+          for proj in tests/*Tests/*.csproj; do
+            echo ""
+            echo "=== Running $proj ==="
+            dotnet run --project "$proj" -c Release --no-build
+          done
+
+      - name: Pack
+        if: github.event_name == 'push'
+        run: dotnet pack src/GHKanban.Web/ -c Release -o ./artifacts --no-build
+
+      - name: Upload nupkg artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ghkanban-nupkg
+          path: ./artifacts/*.nupkg
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    name: Publish to NuGet
+    needs: build
+    # Only publish on tag push (e.g. `git tag v0.2.0 && git push --tags`).
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ghkanban-nupkg
+          path: ./artifacts
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'ga'
+
+      - name: Push to NuGet.org
+        # Requires the NUGET_API_KEY repository secret. Generate one at
+        # https://www.nuget.org/account/apikeys and add via Settings → Secrets → Actions.
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg \
+            --api-key "${{ secrets.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate

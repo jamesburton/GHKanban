@@ -43,7 +43,7 @@ To enable real-time updates from GitHub webhooks (recommended for OSS-maintainer
 
 ## License
 
-TBD.
+[Apache-2.0](LICENSE).
 
 ---
 
