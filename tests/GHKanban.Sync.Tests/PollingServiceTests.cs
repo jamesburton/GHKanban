@@ -22,7 +22,8 @@ public class PollingServiceTests
             new GitHubConfig(new GitHubAuth("X"), new GitHubWebhook(null, null), TimeSpan.FromMilliseconds(50), TimeSpan.FromHours(1)),
             new[] { new BoardConfig("b", "B", new BoardScope(new[] { "owner/repo" }, [], new Dictionary<string, string>()), []) },
             [], []));
-        var svc = new PollingService(reader, store, cfg, NullLogger<PollingService>.Instance);
+        var processor = new WebhookEventProcessor(store, NullLogger<WebhookEventProcessor>.Instance);
+        var svc = new PollingService(reader, store, cfg, processor, NullLogger<PollingService>.Instance);
 
         await svc.PollOnceAsync(TestContext.Current.CancellationToken);
 
