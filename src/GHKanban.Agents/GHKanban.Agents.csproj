@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\GHKanban.Core\GHKanban.Core.csproj" />
     <ProjectReference Include="..\GHKanban.Rules\GHKanban.Rules.csproj" />
     <ProjectReference Include="..\GHKanban.GitHub\GHKanban.GitHub.csproj" />
+    <ProjectReference Include="..\GHKanban.Sync\GHKanban.Sync.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>Library</OutputType>
