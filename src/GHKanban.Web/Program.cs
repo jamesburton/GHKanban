@@ -70,7 +70,7 @@ var app = builder.Build();
 // Start config watcher
 _ = app.Services.GetRequiredService<ConfigWatcher>();
 
-// Webhook endpoint will be registered in B15
+app.MapWebhook();
 
 app.UseStaticFiles();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
