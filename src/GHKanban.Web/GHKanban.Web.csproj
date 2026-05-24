@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\GHKanban.Core\GHKanban.Core.csproj" />
     <ProjectReference Include="..\GHKanban.Rules\GHKanban.Rules.csproj" />
     <ProjectReference Include="..\GHKanban.Config\GHKanban.Config.csproj" />

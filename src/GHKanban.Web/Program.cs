@@ -1,4 +1,79 @@
-// Entry point — full implementation in Task 10 (Web host + Blazor wiring).
+using GHKanban.Agents;
+using GHKanban.Config;
+using GHKanban.GitHub;
+using GHKanban.Sync;
+using GHKanban.Web;
+using GHKanban.Web.Components;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Logging
+builder.Host.UseSerilog((ctx, cfg) => cfg.WriteTo.Console());
+
+// Config: first-run wizard creates ~/.ghkanban/ if missing
+var configRoot = Environment.GetEnvironmentVariable("GHKANBAN_CONFIG_ROOT")
+    ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ghkanban");
+FirstRunWizard.EnsureInitialised(configRoot);
+
+var initialSnapshot = ConfigWatcher.LoadOnce(configRoot);
+var configStore = new ConfigStore(initialSnapshot);
+builder.Services.AddSingleton(configStore);
+builder.Services.AddSingleton(_ => new ConfigWatcher(configRoot, configStore));
+
+// SQLite state
+var dbPath = Path.Combine(configRoot, "state.db");
+var connString = $"Data Source={dbPath}";
+var conn = new SqliteConnection(connString);
+conn.Open();
+SqliteSchema.Apply(conn);
+builder.Services.AddSingleton(conn);
+builder.Services.AddSingleton<SyncCursorStore>();
+builder.Services.AddSingleton<AgentRunStore>();
+
+// GitHub
+var pat = Environment.GetEnvironmentVariable(initialSnapshot.GitHub.Auth.PatEnv) ?? "";
+builder.Services.AddSingleton<IGitHubReader>(_ => new GitHubReader(pat));
+builder.Services.AddSingleton<IGitHubWriter>(_ => new GitHubWriter(pat));
+
+// Sync engine
+builder.Services.AddSingleton<IssueModelStore>();
+builder.Services.AddHostedService<PollingService>();
+builder.Services.AddSingleton<WebhookEventProcessor>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<WebhookEventProcessor>());
+builder.Services.AddHostedService<ReconcilerService>();
+
+// Agents
+builder.Services.AddSingleton<AgentRegistry>();
+builder.Services.AddSingleton<AgentDispatcher>(sp =>
+{
+    var registry = sp.GetRequiredService<AgentRegistry>();
+    var snap = sp.GetRequiredService<ConfigStore>().Current;
+    var agents = snap.Agents.ToDictionary(
+        a => a.Id,
+        a => registry.Resolve(a),
+        StringComparer.OrdinalIgnoreCase);
+    var reader = sp.GetRequiredService<IGitHubReader>();
+    string currentUser;
+    try { currentUser = reader.GetCurrentUserLoginAsync().GetAwaiter().GetResult(); }
+    catch { currentUser = ""; }  // bootstraps with empty user when PAT is invalid (e.g. first-run)
+    return new AgentDispatcher(agents, sp.GetRequiredService<AgentRunStore>(), currentUser, sp.GetRequiredService<ILogger<AgentDispatcher>>());
+});
+
+// Blazor
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
 var app = builder.Build();
+
+// Start config watcher
+_ = app.Services.GetRequiredService<ConfigWatcher>();
+
+// Webhook endpoint will be registered in B15
+
+app.UseStaticFiles();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+
+app.Urls.Add($"http://localhost:{Environment.GetEnvironmentVariable("GHKANBAN_PORT") ?? "5454"}");
 app.Run();
