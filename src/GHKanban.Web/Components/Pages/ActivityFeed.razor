@@ -1,0 +1,30 @@
+@page "/activity"
+@inject AgentRunStore Runs
+
+<h1>Agent activity</h1>
+
+<table>
+    <thead><tr><th>When</th><th>Agent</th><th>Issue</th><th>Trigger</th><th>Status</th><th>Output</th></tr></thead>
+    <tbody>
+        @foreach (var r in _runs)
+        {
+            <tr class="activity-row">
+                <td>@r.StartedAt.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@r.AgentName</td>
+                <td>@r.Repo#@r.IssueNumber</td>
+                <td>@r.TriggerEvent</td>
+                <td>@r.Status</td>
+                <td>@(r.Status == AgentRunStatus.Success ? "✓" : r.Error)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IReadOnlyList<AgentRunRecord> _runs = Array.Empty<AgentRunRecord>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _runs = await Runs.GetRecentAsync(50);
+    }
+}
