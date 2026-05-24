@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="Octokit" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\GHKanban.Core\GHKanban.Core.csproj" />
   </ItemGroup>
   <PropertyGroup>
