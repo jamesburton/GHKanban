@@ -94,3 +94,36 @@ jobs:
             --api-key "${{ secrets.NUGET_API_KEY }}" \
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
+
+  publish-image:
+    name: Publish agent image to GHCR
+    needs: build
+    # Only build/push on tag pushes (matches the publish-to-NuGet job's trigger).
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build + push agent image
+        uses: docker/build-push-action@v6
+        with:
+          context: .                                    # repo root, so Directory.Packages.props is available
+          file: src/GHKanban.AgentImage/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/jamesburton/ghkanban-agent:${{ github.ref_name }}
+            ghcr.io/jamesburton/ghkanban-agent:latest
+          platforms: linux/amd64,linux/arm64
