@@ -7,13 +7,21 @@ public sealed class GitHubWriter : IGitHubWriter
 {
     private readonly IGitHubClient _client;
 
-    /// <summary>Initialises a new instance authenticated with the given personal access token.</summary>
+    /// <summary>
+    /// Initialises a new instance authenticated with the given personal access token.
+    /// An empty/whitespace token produces an anonymous client — useful during first-run
+    /// when the wizard hasn't been completed yet (any actual API call will 401, which is
+    /// fine because the wizard intercepts the user before that point).
+    /// </summary>
+    /// <param name="personalAccessToken">GitHub PAT, or empty/whitespace for anonymous.</param>
     public GitHubWriter(string personalAccessToken)
     {
-        var conn = new Connection(new ProductHeaderValue("GHKanban", "0.1"))
+        var conn = new Connection(new ProductHeaderValue("GHKanban", "0.1"));
+        if (!string.IsNullOrWhiteSpace(personalAccessToken))
         {
-            Credentials = new Credentials(personalAccessToken)
-        };
+            conn.Credentials = new Credentials(personalAccessToken);
+        }
+
         _client = new GitHubClient(conn);
     }
 
